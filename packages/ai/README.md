@@ -81,6 +81,25 @@ yield *
   })
 ```
 
+Z.ai image models infer open Z.ai-native options from the selected model:
+
+```ts
+yield *
+  Image.generate({
+    model: ZAI.configure({ apiKey }).image("any-model-id"),
+    prompt,
+    options: {
+      quality: "hd",
+      userID: "user-123",
+      future_option: true,
+    },
+    http,
+  })
+```
+
+Z.ai output URLs expire after 30 days. Download and persist generated images promptly if they must remain
+available.
+
 Conversational image generation remains part of the LLM interaction. OpenAI Responses exposes it through its hosted image tool:
 
 ```ts
@@ -181,7 +200,7 @@ const gateway = CloudflareAIGateway.configure({
 }).model("workers-ai/@cf/meta/llama-3.1-8b-instruct")
 ```
 
-Included providers: OpenAI, Anthropic, Google (Gemini), Google Vertex Gemini and Anthropic, Amazon Bedrock, Azure OpenAI, Cloudflare AI Gateway, Cloudflare Workers AI, GitHub Copilot, OpenRouter, xAI, plus generic OpenAI-compatible Chat and Responses entrypoints and an Anthropic Messages-compatible entrypoint.
+Included providers: OpenAI, Anthropic, Google (Gemini), Google Vertex Gemini and Anthropic, Amazon Bedrock, Azure OpenAI, Cloudflare AI Gateway, Cloudflare Workers AI, GitHub Copilot, OpenRouter, xAI, Z.ai, plus generic OpenAI-compatible Chat and Responses entrypoints and an Anthropic Messages-compatible entrypoint.
 
 ### Package-like entrypoints
 
