@@ -2,6 +2,20 @@ import { contextBridge, ipcRenderer, webUtils } from "electron"
 import type { ElectronAPI, WslServersEvent } from "./types"
 import type { UpdaterState } from "@opencode-ai/app/updater"
 
+// Message metadata footer
+{
+const mc2=".oc-mf{font-size:11px;color:var(--text-weak);margin-top:4px;text-align:right;cursor:default;line-height:1.4}.oc-mf-ts,.oc-mf-tok{white-space:nowrap}"
+const s2=document.createElement("style");s2.textContent=mc2;s2.id="oc-meta-fix"
+const inj2=()=>{if(document.head){document.head.appendChild(s2);return true}return false}
+if(!inj2())document.addEventListener("DOMContentLoaded",inj2,{once:true})
+const fm=d=>{const n=new Date();const sd=d.toDateString()===n.toDateString();const yd=new Date(n);yd.setDate(yd.getDate()-1);const iy=d.toDateString()===yd.toDateString();const ts=d.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"});if(sd)return"Today, "+ts;if(iy)return"Yesterday, "+ts;if(d.getFullYear()===n.getFullYear())return d.toLocaleDateString(undefined,{month:"short",day:"numeric"})+", "+ts;return d.toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"})+", "+ts}
+const mf=el=>{if(el.getAttribute("data-mf")==="1")return;const ia=el.matches('[data-component="text-part"]');if(!el.matches('[data-component="user-message"]')&&!ia)return;const tc=el.getAttribute("data-time-created");const tcom=el.getAttribute("data-time-completed");if(ia&&tcom===null)return;el.setAttribute("data-mf","1");const f=document.createElement("div");f.className="oc-mf";const p=[];if(tc){const d=new Date(parseInt(tc,10));const sp=document.createElement("span");sp.className="oc-mf-ts";sp.textContent=fm(d);sp.title=d.toLocaleString();p.push(sp)}if(ia){const ti=el.getAttribute("data-tokens-input");const to=el.getAttribute("data-tokens-output");const tr=el.getAttribute("data-tokens-reasoning");if(to){p.push(document.createTextNode(" \u00B7 "));const sp=document.createElement("span");sp.className="oc-mf-tok";sp.textContent="\u2191"+(ti||"0")+" \u2193"+to;const tip=[];if(ti)tip.push("Input: "+(+ti).toLocaleString()+" tok");if(to)tip.push("Output: "+(+to).toLocaleString()+" tok");if(tr)tip.push("Thinking: "+(+tr).toLocaleString()+" tok");if(tc&&tcom){const ms=parseInt(tcom,10)-parseInt(tc,10);if(ms>0){const tps=((+to)/(ms/1e3)).toFixed(1);tip.push("Speed: ~"+tps+" tok/s");tip.push("Total: "+(ms/1e3).toFixed(1)+"s")}}sp.title=tip.join(" \u00B7 ");p.push(sp)}}if(p.length===0)return;p.forEach(x=>f.appendChild(x));const cw=el.querySelector('[data-slot="user-message-copy-wrapper"],[data-slot="text-part-copy-wrapper"]');if(cw&&cw.parentNode)cw.parentNode.insertBefore(f,cw.nextSibling);else el.appendChild(f)}
+const m1=new MutationObserver(recs=>{for(const r of recs){for(const n of r.addedNodes){if(n.nodeType!==1)continue;if(n.matches('[data-component="user-message"],[data-component="text-part"]'))mf(n);else n.querySelectorAll('[data-component="user-message"],[data-component="text-part"]').forEach(mf)}}})
+const m2=new MutationObserver(recs=>{for(const r of recs){if(r.type!=="attributes")continue;mf(r.target)}})
+if(document.documentElement){m1.observe(document.documentElement,{childList:true,subtree:true});m2.observe(document.documentElement,{subtree:true,attributes:true,attributeFilter:["data-time-completed"]})}else document.addEventListener("DOMContentLoaded",()=>{m1.observe(document.documentElement,{childList:true,subtree:true});m2.observe(document.documentElement,{subtree:true,attributes:true,attributeFilter:["data-time-completed"]})},{once:true})
+document.querySelectorAll('[data-component="user-message"],[data-component="text-part"]').forEach(mf)
+}
+
 const updaterCallbacks = new Set<(state: UpdaterState) => void>()
 let updaterState: UpdaterState | undefined
 let updaterSubscription: Promise<void> | undefined
