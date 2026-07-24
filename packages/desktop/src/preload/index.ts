@@ -126,3 +126,5 @@ const api: ElectronAPI = {
 }
 
 contextBridge.exposeInMainWorld("api", api)
+
+// test
